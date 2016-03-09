@@ -1,0 +1,156 @@
+diff -Naur mkspecs/devices/freebsd-arm-generic-clang.orig/qmake.conf mkspecs/devices/freebsd-arm-generic-clang/qmake.conf
+--- mkspecs/devices/freebsd-arm-generic-clang.orig/qmake.conf	1969-12-31 16:00:00.000000000 -0800
++++ mkspecs/devices/freebsd-arm-generic-clang/qmake.conf	2016-03-07 18:01:20.999306000 -0800
+@@ -0,0 +1,46 @@
++#
++# qmake configuration for generic ARM device
++#
++
++MAKEFILE_GENERATOR      = UNIX
++CONFIG                 += incremental
++QMAKE_INCREMENTAL_STYLE = sublib
++
++include(../../freebsd-clang/qmake.conf)
++
++!load(device_config) {
++    error(Could not successfully load device configuration)
++}
++
++QMAKE_CC                = $${CROSS_COMPILE}cc
++QMAKE_CXX               = $${CROSS_COMPILE}c++
++QMAKE_LINK              = $${QMAKE_CXX}
++QMAKE_LINK_SHLIB        = $${QMAKE_CXX}
++
++QMAKE_AR                = $${CROSS_COMPILE}ar cqs
++QMAKE_OBJCOPY           = $${CROSS_COMPILE}objcopy
++QMAKE_NM                = $${CROSS_COMPILE}nm -P
++QMAKE_STRIP             = $${CROSS_COMPILE}strip
++
++QMAKE_INCDIR		= $${CROSS_COMPILE}/../include/
++QMAKE_LIBDIR		= $${CROSS_COMPILE}/../lib/
++
++QMAKE_LFLAGS		+= -Wl,-rpath-link,$$[QT_SYSROOT]/usr/local/lib
++
++QMAKE_LIBS              += -lexecinfo
++
++QMAKE_CXXFLAGS          = $$QMAKE_CFLAGS
++
++COMPILER_FLAGS		+= -mfloat-abi=softfp
++
++QMAKE_CFLAGS       += $$COMPILER_FLAGS
++QMAKE_CXXFLAGS     += $$COMPILER_FLAGS
++
++# clang 3.5.0 has issues with -O2 on ARM
++QMAKE_CFLAGS -= -O2
++QMAKE_CXXFLAGS -= -O2
++
++QMAKE_CFLAGS_RELEASE -= -O2
++QMAKE_CXXFLAGS_RELEASE -= -O2
++
++load(qt_config)
+diff -Naur mkspecs/devices/freebsd-arm-generic-clang.orig/qplatformdefs.h mkspecs/devices/freebsd-arm-generic-clang/qplatformdefs.h
+--- mkspecs/devices/freebsd-arm-generic-clang.orig/qplatformdefs.h	1969-12-31 16:00:00.000000000 -0800
++++ mkspecs/devices/freebsd-arm-generic-clang/qplatformdefs.h	2016-03-08 12:32:54.391793000 -0800
+@@ -0,0 +1,34 @@
++/****************************************************************************
++**
++** Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
++** Contact: http://www.qt-project.org/legal
++**
++** This file is part of the qmake spec of the Qt Toolkit.
++**
++** $QT_BEGIN_LICENSE:LGPL21$
++** Commercial License Usage
++** Licensees holding valid commercial Qt licenses may use this file in
++** accordance with the commercial license agreement provided with the
++** Software or, alternatively, in accordance with the terms contained in
++** a written agreement between you and Digia. For licensing terms and
++** conditions see http://qt.digia.com/licensing. For further information
++** use the contact form at http://qt.digia.com/contact-us.
++**
++** GNU Lesser General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU Lesser
++** General Public License version 2.1 or version 3 as published by the Free
++** Software Foundation and appearing in the file LICENSE.LGPLv21 and
++** LICENSE.LGPLv3 included in the packaging of this file. Please review the
++** following information to ensure the GNU Lesser General Public License
++** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
++** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
++**
++** In addition, as a special exception, Digia gives you certain additional
++** rights. These rights are described in the Digia Qt LGPL Exception
++** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
++**
++** $QT_END_LICENSE$
++**
++****************************************************************************/
++
++#include "../../freebsd-clang/qplatformdefs.h"
+diff -Naur mkspecs/devices/freebsd-rasp-pi-clang.orig/qmake.conf mkspecs/devices/freebsd-rasp-pi-clang/qmake.conf
+--- mkspecs/devices/freebsd-rasp-pi-clang.orig/qmake.conf	1969-12-31 16:00:00.000000000 -0800
++++ mkspecs/devices/freebsd-rasp-pi-clang/qmake.conf	2016-03-08 12:34:04.106828000 -0800
+@@ -0,0 +1,26 @@
++#
++# qmake configuration for Broadcom's Raspberry PI
++# http://wiki.qt.io/RaspberryPi
++
++include(../freebsd-arm-generic-clang/qmake.conf)
++
++QMAKE_LFLAGS            += -Wl,-rpath-link,$$[QT_SYSROOT]/usr/local/lib
++
++QMAKE_LIBDIR_OPENGL_ES2 = $$[QT_SYSROOT]/usr/local/lib
++QMAKE_LIBDIR_EGL        = $$QMAKE_LIBDIR_OPENGL_ES2
++QMAKE_LIBDIR_OPENVG     = $$QMAKE_LIBDIR_OPENGL_ES2
++
++QMAKE_INCDIR_EGL        = $$[QT_SYSROOT]/usr/local/include \
++                          $$[QT_SYSROOT]/usr/local/include/interface/vcos/pthreads \
++                          $$[QT_SYSROOT]/usr/local/include/interface/vmcs_host/linux
++QMAKE_INCDIR_OPENGL_ES2 = $${QMAKE_INCDIR_EGL}
++QMAKE_INCDIR_OPENVG     = $${QMAKE_INCDIR_EGL}
++
++QMAKE_LIBS_EGL          = -lEGL -lGLESv2
++QMAKE_LIBS_OPENGL_ES2   = -lEGL -lGLESv2
++QMAKE_LIBS_OPENVG       = -lEGL -lOpenVG -lGLESv2
++
++# Preferred eglfs backend
++EGLFS_DEVICE_INTEGRATION = eglfs_brcm
++
++load(qt_config)
+diff -Naur mkspecs/devices/freebsd-rasp-pi-clang.orig/qplatformdefs.h mkspecs/devices/freebsd-rasp-pi-clang/qplatformdefs.h
+--- mkspecs/devices/freebsd-rasp-pi-clang.orig/qplatformdefs.h	1969-12-31 16:00:00.000000000 -0800
++++ mkspecs/devices/freebsd-rasp-pi-clang/qplatformdefs.h	2016-03-07 21:47:00.504645000 -0800
+@@ -0,0 +1,34 @@
++/****************************************************************************
++**
++** Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
++** Contact: http://www.qt-project.org/legal
++**
++** This file is part of the qmake spec of the Qt Toolkit.
++**
++** $QT_BEGIN_LICENSE:LGPL21$
++** Commercial License Usage
++** Licensees holding valid commercial Qt licenses may use this file in
++** accordance with the commercial license agreement provided with the
++** Software or, alternatively, in accordance with the terms contained in
++** a written agreement between you and Digia. For licensing terms and
++** conditions see http://qt.digia.com/licensing. For further information
++** use the contact form at http://qt.digia.com/contact-us.
++**
++** GNU Lesser General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU Lesser
++** General Public License version 2.1 or version 3 as published by the Free
++** Software Foundation and appearing in the file LICENSE.LGPLv21 and
++** LICENSE.LGPLv3 included in the packaging of this file. Please review the
++** following information to ensure the GNU Lesser General Public License
++** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
++** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
++**
++** In addition, as a special exception, Digia gives you certain additional
++** rights. These rights are described in the Digia Qt LGPL Exception
++** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
++**
++** $QT_END_LICENSE$
++**
++****************************************************************************/
++
++#include "../../freebsd-clang/qplatformdefs.h"
