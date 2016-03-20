@@ -3,9 +3,9 @@
 PORTNAME=	qt56-multimedia
 DISTVERSION=	5.6.0
 CATEGORIES=	multimedia
-MASTER_SITES=	http://download.qt.io/development_releases/qt/5.6/${DISTVERSION}-rc/single/
-DISTNAME=	qt-everywhere-opensource-src-${DISTVERSION}-rc
-DISTFILES=	qt-everywhere-opensource-src-${DISTVERSION}-rc.tar.gz
+MASTER_SITES=	http://download.qt.io/official_releases/qt/5.6/${DISTVERSION}/single/
+DISTNAME=	qt-everywhere-opensource-src-${DISTVERSION}
+DISTFILES=	qt-everywhere-opensource-src-${DISTVERSION}.tar.gz
 
 MAINTAINER=	gonzo@FreeBSD.org
 COMMENT=	Cross-platform application and UI framework for embedded devices
